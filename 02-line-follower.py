@@ -2,7 +2,8 @@ from PiStorms import PiStorms
 from time import sleep
 from HiTechnicColorV2 import HiTechnicColorV2
 from threading import Thread
-import math
+from pid import PIDController
+#from math import copysign
 
 print "running program"
 psm = PiStorms()
@@ -11,21 +12,25 @@ hc = HiTechnicColorV2()
 psm.BBS1.activateCustomSensorI2C()
 '''
 
+angle_pid = PIDController(-10, 10, 580.0, 0.04, 0.0, 0.0)
+
 #exit variable will be used later to exit the program and return to PiStorms
 exit = False
 
 def line_follow():
-    speed = 20
-    threshold = 600
-    threshold_ = 20
-    scale = 5
+    speed = 10
+    #threshold = 600
+    #threshold_ = 20
+    #scale = 3
     if not exit:
         value = psm.BBS1.lightSensorNXT(True)
-        offset = math.copysign(1, value - threshold) * scale if abs(value - threshold) > threshold_ else 0
+        #offset = math.copysign(1, value - threshold) * scale if abs(value - threshold) > threshold_ else 0
+        offset = angle_pid.calculate(value)
         psm.screen.clearScreen()
         psm.screen.termPrintln(str(value) + ' ' + str(offset))
-        psm.BBM1.setSpeed(speed - offset)
-        psm.BBM2.setSpeed(speed + offset)
+        psm.BBM1.setSpeed(speed + offset)
+        psm.BBM2.setSpeed(speed - offset)
+        #sleep(0.05)
     # TODO exit gracefully
 
 '''
@@ -39,19 +44,20 @@ def find_victims():
             sleep(2)
         sleep(0.1)
         psm.led(1, 0, 0, 0)
-
-lf = Thread(target=line_follow)
-lf.start()
-fv = Thread(target=find_victims)
-fv.start()
 '''
 
-while(not exit):
+#lf = Thread(target=line_follow)
+#lf.start()
+#fv = Thread(target=find_victims)
+#fv.start()
+
+while not exit:
 
     line_follow()
 
     if(psm.isKeyPressed() == True): # if the GO button is pressed
         exit = True
+        sleep(0.1)
         psm.screen.clearScreen()
         psm.screen.termPrintln("Exiting to menu")
         psm.led(1,0,0,0)    
