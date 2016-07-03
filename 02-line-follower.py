@@ -2,6 +2,7 @@ from PiStorms import PiStorms
 from time import sleep
 from HiTechnicColorV2 import HiTechnicColorV2
 from threading import Thread
+import math
 
 print "running program"
 psm = PiStorms()
@@ -14,15 +15,17 @@ psm.BBS1.activateCustomSensorI2C()
 exit = False
 
 def line_follow():
-    speed = 40
+    speed = 20
+    threshold = 600
+    threshold_ = 20
+    scale = 5
     if not exit:
+        value = psm.BBS1.lightSensorNXT(True)
+        offset = math.copysign(1, value - threshold) * scale if abs(value - threshold) > threshold_ else 0
         psm.screen.clearScreen()
-        psm.screen.termPrintln('')
-        psm.screen.termPrintln(str(psm.BBS1.lightSensorNXT(True)))
-        '''
-        psm.BBM1.setSpeed(speed + offset)
-        psm.BBM2.setSpeed(speed - offset)
-        '''
+        psm.screen.termPrintln(str(value) + ' ' + str(offset))
+        psm.BBM1.setSpeed(speed - offset)
+        psm.BBM2.setSpeed(speed + offset)
     # TODO exit gracefully
 
 '''
@@ -50,7 +53,6 @@ while(not exit):
     if(psm.isKeyPressed() == True): # if the GO button is pressed
         exit = True
         psm.screen.clearScreen()
-        psm.screen.termPrintln("")
         psm.screen.termPrintln("Exiting to menu")
         psm.led(1,0,0,0)    
         psm.BAM1.float()
