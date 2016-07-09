@@ -14,7 +14,7 @@ angle_pid = PIDController(-25, 25, 590.0, 0.05, 0.0, 0.0)
 #exit variable will be used later to exit the program and return to PiStorms
 exit = False
 
-def follow(e):
+def follow(e, f):
     speed = 8
     while not exit and not e.isSet():
         value = psm.BBS1.lightSensorNXT(True)
@@ -23,6 +23,9 @@ def follow(e):
         #psm.screen.termPrintln(str(value) + ' ' + str(offset))
         psm.BBM1.setSpeed(speed + offset)
         psm.BBM2.setSpeed(speed - offset)
+        sleep(0.1)
+    while not exit and not f.isSet():
+        psm.BBM1.setSpeedSync(20)
         sleep(0.1)
     psm.BBM1.float()
     psm.BBM2.float()
@@ -38,7 +41,7 @@ def search(e, f):
         color = hc.get_colornum()
         if not e.isSet():
             if color > BLACK and color <= GREEN:
-                psm.led(1, 255, 0, 0)
+                psm.led(1, 0, 255, 0)
                 psm.screen.termPrintln('found victim')
                 sleep(3)
                 psm.led(1, 0, 0, 0)
@@ -59,7 +62,7 @@ def search(e, f):
 entered_house = Event()
 found_bomb = Event()
 
-f_thread = Thread(target=follow, args=(entered_house,))
+f_thread = Thread(target=follow, args=(entered_house, found_bomb))
 f_thread.start()
 s_thread = Thread(target=search, args=(entered_house, found_bomb))
 s_thread.start()
