@@ -31,20 +31,29 @@ def search(e, f):
     RED = 7         # or 8 or 9
     GREEN = 4
     PURPLE = 17     # also black o.O
+    BLACK = 0
     while not exit:
-        psm.screen.clearScreen()
-        psm.screen.termPrintln(str(hc.get_colornum()))
+        #psm.screen.clearScreen()
+        #psm.screen.termPrintln(str(hc.get_colornum()))
         color = hc.get_colornum()
-        if color <= GREEN:
+        if color > BLACK and color <= GREEN:
             if not e.isSet():
                 psm.led(1, 255, 0, 0)
+                psm.screen.clearScreen()
+                psm.screen.termPrintln('found victim')
                 sleep(3)
                 psm.led(1, 0, 0, 0)
                 sleep(2)
             elif not f.isSet():
                 f.set()
+                psm.led(1, 255, 0, 0)
+                psm.screen.clearScreen()
+                psm.screen.termPrintln('f.set()')
+                print 'f.set()'
         elif color >= RED and color <= RED + 2:
-            #e.set()
+            e.set()
+            psm.screen.clearScreen()
+            psm.screen.termPrintln('f.set()')
             print 'e.set()'
         sleep(0.1)
         psm.led(1, 0, 0, 0)
