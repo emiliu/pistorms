@@ -22,7 +22,7 @@ def line_follow():
     #threshold = 600
     #threshold_ = 20
     #scale = 3
-    if not exit:
+    while not exit:
         value = psm.BBS1.lightSensorNXT(True)
         #offset = math.copysign(1, value - threshold) * scale if abs(value - threshold) > threshold_ else 0
         offset = angle_pid.calculate(value)
@@ -30,8 +30,9 @@ def line_follow():
         psm.screen.termPrintln(str(value) + ' ' + str(offset))
         psm.BBM1.setSpeed(speed + offset)
         psm.BBM2.setSpeed(speed - offset)
-        #sleep(0.05)
-    # TODO exit gracefully
+        sleep(0.05)
+    psm.BBM1.float()
+    psm.BBM2.float()
 
 '''
 def find_victims():
@@ -46,14 +47,12 @@ def find_victims():
         psm.led(1, 0, 0, 0)
 '''
 
-#lf = Thread(target=line_follow)
-#lf.start()
+lf = Thread(target=line_follow)
+lf.start()
 #fv = Thread(target=find_victims)
 #fv.start()
 
 while not exit:
-
-    line_follow()
 
     if(psm.isKeyPressed() == True): # if the GO button is pressed
         exit = True
