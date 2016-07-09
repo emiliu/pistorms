@@ -50,13 +50,13 @@ def search(e, f):
                 psm.screen.clearScreen()
                 psm.screen.termPrintln('f.set()')
                 print 'f.set()'
-        elif color >= RED and color <= RED + 2:
+        elif color >= RED and color <= RED + 2 and not e.set():
             e.set()
             psm.screen.clearScreen()
-            psm.screen.termPrintln('f.set()')
+            psm.screen.termPrintln('e.set()')
             print 'e.set()'
         sleep(0.1)
-        psm.led(1, 0, 0, 0)
+    psm.led(1, 0, 0, 0)
 
 entered_house = Event()
 found_bomb = Event()
