@@ -12,13 +12,13 @@ hc = HiTechnicColorV2()
 psm.BBS1.activateCustomSensorI2C()
 '''
 
-angle_pid = PIDController(-10, 10, 580.0, 0.04, 0.0, 0.0)
+angle_pid = PIDController(-25, 25, 590.0, 0.05, 0.0, 0.0)
 
 #exit variable will be used later to exit the program and return to PiStorms
 exit = False
 
 def line_follow():
-    speed = 10
+    speed = 8
     #threshold = 600
     #threshold_ = 20
     #scale = 3

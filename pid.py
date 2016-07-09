@@ -15,6 +15,8 @@ class PIDController:
 
         # p, i, d updates
         error = self.target - current
+        if error > 0:
+            error *= 4
         self.sigma += error * dt
         slope = (self.current - current) / dt
 
