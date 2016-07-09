@@ -19,11 +19,11 @@ def follow(e):
     while not exit and not e.isSet():
         value = psm.BBS1.lightSensorNXT(True)
         offset = angle_pid.calculate(value)
-        psm.screen.clearScreen()
-        psm.screen.termPrintln(str(value) + ' ' + str(offset))
+        #psm.screen.clearScreen()
+        #psm.screen.termPrintln(str(value) + ' ' + str(offset))
         psm.BBM1.setSpeed(speed + offset)
         psm.BBM2.setSpeed(speed - offset)
-        sleep(0.05)
+        sleep(0.1)
     psm.BBM1.float()
     psm.BBM2.float()
 
@@ -32,8 +32,8 @@ def search(e, f):
     GREEN = 4
     PURPLE = 17     # also black o.O
     while not exit:
-        #psm.screen.clearScreen()
-        #psm.screen.termPrintln(str(hc.get_colornum()))
+        psm.screen.clearScreen()
+        psm.screen.termPrintln(str(hc.get_colornum()))
         color = hc.get_colornum()
         if color <= GREEN:
             if not e.isSet():
@@ -54,10 +54,12 @@ found_bomb = Event()
 
 f_thread = Thread(target=follow, args=(entered_house,))
 f_thread.start()
-#s_thread = Thread(target=search, args=(entered_house, found_bomb))
-#s_thread.start()
+s_thread = Thread(target=search, args=(entered_house, found_bomb))
+s_thread.start()
 
 while not exit:
+
+    sleep(0.05)
 
     if psm.isKeyPressed(): # if the GO button is pressed
         psm.screen.clearScreen()
@@ -69,5 +71,3 @@ while not exit:
         psm.BBM2.float() 
         sleep(0.1)
         exit = True
-
-    sleep(0.05)
