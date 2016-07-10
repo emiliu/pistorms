@@ -7,6 +7,7 @@ import math
 
 print "running program"
 
+FOLLOW_SPEED = 15
 SEARCH_SPEED = 20
 WHEEL_DIAMETER = 2.25 # in
 ROBOT_WIDTH = 6.5 # in
@@ -14,7 +15,7 @@ ROBOT_WIDTH = 6.5 # in
 psm = PiStorms()
 hc = HiTechnicColorV2()
 psm.BBS2.activateCustomSensorI2C()
-angle_pid = PIDController(-25, 25, 590.0, 0.05, 0.0, 0.0)
+angle_pid = PIDController(-25, 25, 590.0, 0.1, 0.0, 0.0)
 exit = False
 
 bomb = 0
@@ -44,7 +45,6 @@ def turnDegs(degrees, left=True):
     '''
 
 def follow(e, f, g):
-    FOLLOW_SPEED = 8
     while not exit and not e.isSet():
         value = psm.BBS1.lightSensorNXT(True)
         offset = angle_pid.calculate(value)
