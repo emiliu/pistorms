@@ -7,6 +7,10 @@ import math
 
 print "running program"
 
+SEARCH_SPEED = 50
+WHEEL_DIAMETER = 2.25 # in
+ROBOT_WIDTH = 6.5 # in
+
 psm = PiStorms()
 hc = HiTechnicColorV2()
 psm.BBS2.activateCustomSensorI2C()
@@ -14,14 +18,17 @@ angle_pid = PIDController(-25, 25, 590.0, 0.05, 0.0, 0.0)
 exit = False
 
 
-def toDegs(dist, dia):
-    return int(float(dist) / dia * 360)
+def turnDegs(degrees):
+    theta = int(abs(2.0 * ROBOT_WIDTH * degrees / WHEEL_DIAMETER))
+    print theta
+    if degrees > 0:
+        psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
+    else:
+        psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
+    sleep(2)
 
 def follow(e, f, g):
     FOLLOW_SPEED = 8
-    SEARCH_SPEED = 80
-    WHEEL_DIA = 3.0 # in
-    ROBOT_WID = 6.0 # in
     while not exit and not e.isSet():
         value = psm.BBS1.lightSensorNXT(True)
         offset = angle_pid.calculate(value)
@@ -34,7 +41,7 @@ def follow(e, f, g):
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
         psm.BBM1.brakeSync()
-        psm.BBM1.runDegs(toDegs(ROBOT_WID * math.PI * 0.5, WHEEL_DIA), SEARCH_SPEED, True, True)
+        turnDegs(90)
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
@@ -44,7 +51,7 @@ def follow(e, f, g):
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
         psm.BBM1.brakeSync()
-        psm.BBM1.runDegs(toDegs(ROBOT_WID * math.PI, WHEEL_DIA), SEARCH_SPEED, True, True)
+        turnDegs(180)
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
@@ -54,10 +61,10 @@ def follow(e, f, g):
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
         psm.BBM1.brakeSync()
-        psm.BBM1.runDegs(toDegs(ROBOT_WID * math.PI, WHEEL_DIA), SEARCH_SPEED, True, True)
+        turnDegs(180)
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
-        psm.BBM2.runDegs(toDegs(ROBOT_WID * math.PI * 0.5, WHEEL_DIA), SEARCH_SPEED, True, True)
+        turnDegs(90)
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
@@ -95,31 +102,35 @@ def search(e, f, g):
                 print 'f.set()'
             elif color >= PURPLE:
                 g.set()
+                print 'g.set()'
                 sleep(0.1)
                 g.clear()
         sleep(0.1)
     psm.led(1, 0, 0, 0)
 
-entered_house = Event()
-found_bomb = Event()
-gone_room = Event()
 
-f_thread = Thread(target=follow, args=(entered_house, found_bomb, gone_room))
-f_thread.start()
-s_thread = Thread(target=search, args=(entered_house, found_bomb, gone_room))
-s_thread.start()
+if __name__ == "__main__":
 
-while not exit:
+    entered_house = Event()
+    found_bomb = Event()
+    gone_room = Event()
 
-    sleep(0.05)
+    f_thread = Thread(target=follow, args=(entered_house, found_bomb, gone_room))
+    f_thread.start()
+    s_thread = Thread(target=search, args=(entered_house, found_bomb, gone_room))
+    s_thread.start()
 
-    if psm.isKeyPressed(): # if the GO button is pressed
-        psm.screen.clearScreen()
-        psm.screen.termPrintln("Exiting to menu")
-        psm.led(1,0,0,0)    
-        psm.BAM1.float()
-        psm.BAM2.float()
-        psm.BBM1.float()
-        psm.BBM2.float() 
-        sleep(0.1)
-        exit = True
+    while not exit:
+
+        sleep(0.05)
+
+        if psm.isKeyPressed(): # if the GO button is pressed
+            psm.screen.clearScreen()
+            psm.screen.termPrintln("Exiting to menu")
+            psm.led(1,0,0,0)    
+            psm.BAM1.float()
+            psm.BAM2.float()
+            psm.BBM1.float()
+            psm.BBM2.float() 
+            sleep(0.1)
+            exit = True

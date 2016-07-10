@@ -10,8 +10,8 @@ import math
 print "running program"
 
 SEARCH_SPEED = 50
-WHEEL_DIAMETER = 3.0 # in
-ROBOT_WIDTH = 8.0 # in
+WHEEL_DIAMETER = 2.25 # in
+ROBOT_WIDTH = 6.5 # in
 
 psm = PiStorms()
 
@@ -23,6 +23,4 @@ def turnDegs(degrees):
     else:
         psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
 
-turnDegs(90)
-
-#psm.BBM1.runDegs(720, 50, True, False)
+turnDegs(180)
