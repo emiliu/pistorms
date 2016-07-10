@@ -7,7 +7,7 @@ import math
 
 print "running program"
 
-SEARCH_SPEED = 50
+SEARCH_SPEED = 20
 WHEEL_DIAMETER = 2.25 # in
 ROBOT_WIDTH = 6.5 # in
 
@@ -35,7 +35,7 @@ def turnDegs(degrees, left=True):
     print theta
     Thread(target = psm.BBM1.runDegs, args = (-1 * theta, SEARCH_SPEED, True, False)).start()
     Thread(target = psm.BBM2.runDegs, args = (theta, SEARCH_SPEED, True, False)).start()
-    sleep(2)
+    sleep(3)
     '''
     if left:
         psm.BBM1.runDegs(-1 * theta, SEARCH_SPEED, True, False)
@@ -55,7 +55,7 @@ def follow(e, f, g):
         sleep(0.1)
     if not exit and not f.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.5)
+        sleep(1)
         psm.BBM1.brakeSync()
         turnDegs(90)
     while not exit and not f.isSet() and not g.isSet():
@@ -104,9 +104,9 @@ def search(e, f, g):
     BLACK = 0
     while not exit:
         #psm.screen.clearScreen()
-        #psm.screen.termPrintln(str(hc.get_colornum()))
-        color = hc.get_colornum()
+        #psm.screen.termPrintln(psm.BBS1.lightSensorNXT(True)) #str(hc.get_colornum()))
         if not e.isSet():
+            color = hc.get_colornum()
             if color > BLACK and color <= GREEN:
                 psm.led(1, 0, 255, 0)
                 psm.screen.termPrintln('found victim')
@@ -118,6 +118,8 @@ def search(e, f, g):
                 psm.screen.termPrintln('e.set()')
                 print 'e.set()'
         elif not f.isSet() and not g.isSet():
+            color = hc.get_colornum()
+            light = psm.BBS1.lightSensorNXT(True)
             if color > BLACK and color <= GREEN:
                 f.set()
                 g.set()
@@ -125,11 +127,12 @@ def search(e, f, g):
                 psm.screen.termPrintln('f.set()')
                 bomb += 1
                 print 'f.set(), bomb = ' + str(bomb)
-            elif color >= PURPLE:
+                sleep(3)
+            elif light < 750: #color >= PURPLE:
                 g.set()
                 bomb += 1
                 print 'g.set(), bomb = ' + str(bomb)
-                sleep(0.1)
+                sleep(3)
                 g.clear()
         sleep(0.1)
     psm.led(1, 0, 0, 0)
