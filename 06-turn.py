@@ -33,7 +33,16 @@ def rightMotor():
     turnDegs(180, False)
     sleep(1)
 
-left = Thread(target = leftMotor)
-left.start()
-right = Thread(target = rightMotor)
-right.start()
+#left = Thread(target = leftMotor)
+#left.start()
+#right = Thread(target = rightMotor)
+#right.start()
+
+def avoid():
+    psm.screen.termPrintln('hi')
+    theta1 = int(7 * 360 / WHEEL_DIAMETER)
+    theta2 = int((ROBOT_WIDTH + 7) * 360 / WHEEL_DIAMETER)
+    psm.BBM1.runDegs(theta1, int(SEARCH_SPEED * 7 / (ROBOT_WIDTH + 7)), True, False)
+    psm.BBM2.runDegs(theta2, SEARCH_SPEED, True, False)
+
+#avoid()

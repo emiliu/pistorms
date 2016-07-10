@@ -44,8 +44,16 @@ def turnDegs(degrees, left=True):
         psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
     '''
 
+def avoid():
+    psm.screen.termPrintln('hi')
+    #theta = int(
+    #Thread(target = psm.BBM1
+
 def follow(e, f, g):
     while not exit and not e.isSet():
+        if psm.BAS1.isTouchedNXT():
+            psm.BBM1.brakeSync()
+            avoid()
         value = psm.BBS1.lightSensorNXT(True)
         offset = angle_pid.calculate(value)
         #psm.screen.clearScreen()
@@ -53,11 +61,15 @@ def follow(e, f, g):
         psm.BBM1.setSpeed(FOLLOW_SPEED + offset)
         psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
         sleep(0.1)
-    if not exit and not f.isSet():
+    while not exit and not f.isSet() and not psm.BAS1.isTouchedNXT():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(1)
+        sleep(0.1)
+    psm.BBM1.brakeSync()
+    if not exit and not f.isSet():
+        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
+        sleep(0.3)
         psm.BBM1.brakeSync()
-        turnDegs(90)
+        turnDegs(-90)
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
@@ -67,19 +79,19 @@ def follow(e, f, g):
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
         psm.BBM1.brakeSync()
-        turnDegs(180)
+        #turnDegs(180)
     while not exit and not f.isSet() and not g.isSet():
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
+        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
         sleep(0.1)
     if not exit:
         sleep(0.1)
     if not exit and not f.isSet():
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.5)
-        psm.BBM1.brakeSync()
-        turnDegs(180)
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.5)
+        #psm.BBM1.setSpeedSync(SEARCH_SPEED)
+        #sleep(0.5)
+        #psm.BBM1.brakeSync()
+        #turnDegs(180)
+        #psm.BBM1.setSpeedSync(SEARCH_SPEED)
+        #sleep(0.5)
         turnDegs(90)
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
