@@ -62,41 +62,41 @@ def follow(e, f, g):
         psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
         sleep(0.1)
     while not exit and not f.isSet() and not psm.BAS1.isTouchedNXT():
+        # enter house
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
     psm.BBM1.brakeSync()
     if not exit and not f.isSet():
+        # face first room
         psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
         sleep(0.3)
         psm.BBM1.brakeSync()
         turnDegs(-90)
     while not exit and not f.isSet() and not g.isSet():
+        # go into first room
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
-    if not exit:
-        sleep(0.1)
-    if not exit and not f.isSet():
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.5)
+    if not exit and not f.isSet(): # and not psm.BAS1.isTouchedNXT():
+        # back up a bit out of first room
         psm.BBM1.brakeSync()
-        #turnDegs(180)
+        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
+    if not exit:
+        # keep backing up
+        sleep(2)
     while not exit and not f.isSet() and not g.isSet():
+        # back into second room
         psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
         sleep(0.1)
-    if not exit:
-        sleep(0.1)
+    psm.BBM1.brakeSync()
     if not exit and not f.isSet():
-        #psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        #sleep(0.5)
-        #psm.BBM1.brakeSync()
-        #turnDegs(180)
-        #psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        #sleep(0.5)
+        # turn to face third room
+        psm.BBM1.setSpeedSync(SEARCH_SPEED)
+        sleep(1)
+        psm.BBM1.brakeSync()
         turnDegs(90)
     while not exit and not f.isSet() and not g.isSet():
+        # enter third room
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.1)
-    if not exit:
         sleep(0.1)
     while not exit: # and bomb (not bomb room) not found
         psm.BBM1.float()
