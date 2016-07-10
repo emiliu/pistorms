@@ -44,6 +44,13 @@ def turnDegs(degrees, left=True):
         psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
     '''
 
+def goStraight(dist):
+    theta = int(dist * 360 / WHEEL_DIAMETER / math.pi)
+    psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
+    psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
+    print theta
+    sleep(5)
+
 def avoid():
     psm.screen.termPrintln('hi')
     #theta = int(
@@ -76,7 +83,11 @@ def follow(e, f, g):
         # go into first room
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
-    if not exit and not f.isSet(): # and not psm.BAS1.isTouchedNXT():
+    while not exit and not psm.BAS1.isTouchedNXT():
+        # touch wall of first room
+        psm.BBM1.setSpeedSync(SEARCH_SPEED)
+        sleep(0.1)
+    if not exit and not f.isSet():
         # back up a bit out of first room
         psm.BBM1.brakeSync()
         psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
@@ -87,11 +98,15 @@ def follow(e, f, g):
         # back into second room
         psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
         sleep(0.1)
+    while not exit and not psm.BAS2.isTouchedNXT():
+        # touch wall of second room
+        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
+        sleep(0.1)
     psm.BBM1.brakeSync()
     if not exit and not f.isSet():
         # turn to face third room
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(1)
+        sleep(2)
         psm.BBM1.brakeSync()
         turnDegs(90)
     while not exit and not f.isSet() and not g.isSet():
@@ -144,8 +159,9 @@ def search(e, f, g):
                 g.set()
                 bomb += 1
                 print 'g.set(), bomb = ' + str(bomb)
-                sleep(3)
+                sleep(0.2)
                 g.clear()
+                sleep(4)
         sleep(0.1)
     psm.led(1, 0, 0, 0)
 

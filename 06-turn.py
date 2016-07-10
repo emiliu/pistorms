@@ -6,6 +6,7 @@ from threading import Thread, Event
 from pid import PIDController
 import math
 '''
+import math
 from threading import Thread
 from time import sleep
 
@@ -45,4 +46,17 @@ def avoid():
     psm.BBM1.runDegs(theta1, int(SEARCH_SPEED * 7 / (ROBOT_WIDTH + 7)), True, False)
     psm.BBM2.runDegs(theta2, SEARCH_SPEED, True, False)
 
+def goStraight(dist):
+    theta = int(dist * 360 / WHEEL_DIAMETER / math.pi)
+    psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
+    psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
+    print theta
+    sleep(5)
+
 #avoid()
+
+#goStraight(24)
+
+psm.BBM1.setSpeedSync(SEARCH_SPEED)
+sleep(3)
+psm.BBM1.brakeSync()
