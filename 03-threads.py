@@ -49,9 +49,17 @@ def goStraight(dist):
     print theta
 
 def avoid():
-    psm.screen.termPrintln('hi')
-    #theta = int(
-    #Thread(target = psm.BBM1
+    psm.screen.termPrintln('obstacle')
+    goStraight(-2)
+    sleep(2)
+    radius = 7
+    turnDegs(-90)
+    theta1 = int(radius * 360 / WHEEL_DIAMETER)
+    theta2 = int((ROBOT_WIDTH + radius) * 360 / WHEEL_DIAMETER)
+    psm.BBM1.runDegs(theta1, int(SEARCH_SPEED * radius / (ROBOT_WIDTH + radius)), True, False)
+    psm.BBM2.runDegs(theta2, SEARCH_SPEED, True, False)
+    sleep(10)
+    turnDegs(-90)
 
 def follow(e, f):
     while not exit and not e.isSet():
@@ -69,7 +77,6 @@ def follow(e, f):
         # enter house
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
-    psm.BBM1.brakeSync()
     if not exit and not f.isSet():
         # face first room
         psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
@@ -80,14 +87,27 @@ def follow(e, f):
         # go into first room
         goStraight(6)
         sleep(2)
+    if not exit and f.isSet():
+        # check for bomb in first room
+        goStraight(10)
+        sleep(3)
+        turnDegs(90)
+        goStraight(18)
+        sleep(10)
+        return
     if not exit and not f.isSet():
         # back into second room
-        goStraight(-30)
+        goStraight(-31)
         sleep(10)
-    psm.BBM1.brakeSync()
+    if not exit and f.isSet():
+        # check for bomb in second room
+        turnDegs(90)
+        goStraight(18)
+        sleep(10)
+        return
     if not exit and not f.isSet():
         # go in front of third room
-        goStraight(10)
+        goStraight(11)
         sleep(3)
     if not exit and not f.isSet():
         # turn to face third room
@@ -103,6 +123,7 @@ def follow(e, f):
         turnDegs(-90)
         goStraight(12)
         sleep(10)
+        return
     psm.BBM1.float()
     psm.BBM2.float()
 
