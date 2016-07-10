@@ -18,10 +18,10 @@ class PIDController:
         if error > 0:
             error *= 4
         self.sigma += error * dt
-        slope = (self.current - current) / dt
+        self.slope = (self.current - current) / dt
 
         # total and bound pid output
-        output = self.kP * error + self.kI * self.sigma + self.kD * slope
+        output = self.kP * error + self.kI * self.sigma + self.kD * self.slope
         output = self.max_out if self.max_out is not None and output > self.max_out else output
         output = self.min_out if self.min_out is not None and output < self.min_out else output
 

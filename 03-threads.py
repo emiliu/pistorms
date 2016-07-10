@@ -7,7 +7,7 @@ import math
 
 print "running program"
 
-FOLLOW_SPEED = 8
+FOLLOW_SPEED = 15
 SEARCH_SPEED = 70
 WHEEL_DIAMETER = 2.25 # in
 ROBOT_WIDTH = 6.5 # in
@@ -15,7 +15,7 @@ ROBOT_WIDTH = 6.5 # in
 psm = PiStorms()
 hc = HiTechnicColorV2()
 psm.BBS2.activateCustomSensorI2C()
-angle_pid = PIDController(-25, 25, 590.0, 0.16, 0.0, 0.0)
+angle_pid = PIDController(-25, 25, 590.0, 0.12, 0.0, 0.0)
 exit = False
 
 '''
@@ -34,7 +34,7 @@ def turnDegs(degrees, left=True):
     print theta
     Thread(target = psm.BBM1.runDegs, args = (-1 * theta, SEARCH_SPEED, True, False)).start()
     Thread(target = psm.BBM2.runDegs, args = (theta, SEARCH_SPEED, True, False)).start()
-    sleep(1.5)
+    sleep(2)
     '''
     if left:
         psm.BBM1.runDegs(-1 * theta, SEARCH_SPEED, True, False)
@@ -59,7 +59,7 @@ def avoid():
     theta2 = int((ROBOT_WIDTH + radius) * 360 / WHEEL_DIAMETER)
     psm.BBM1.runDegs(theta1, int(speed * radius / (ROBOT_WIDTH + radius)), True, False)
     psm.BBM2.runDegs(theta2, speed, True, False)
-    sleep(1)
+    sleep(5)
     turnDegs(-90)
 
 def follow(e, f):
@@ -73,6 +73,13 @@ def follow(e, f):
         #psm.screen.termPrintln(str(value) + ' ' + str(offset))
         psm.BBM1.setSpeed(FOLLOW_SPEED + offset)
         psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
+        '''
+        if angle_pid.slope < 0 and offset > 0:
+            offset = -1 * offset
+            psm.BBM1.setSpeed(FOLLOW_SPEED + offset)
+            psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
+            sleep(1)
+        '''
         sleep(0.1)
     while not exit and not f.isSet() and not psm.BAS1.isTouchedNXT():
         # enter house
@@ -81,29 +88,29 @@ def follow(e, f):
     if not exit and not f.isSet():
         # face first room
         goStraight(-1)
-        sleep(0.3)
+        sleep(1)
         turnDegs(-90)
     if not exit and not f.isSet():
         # go into first room
         goStraight(6)
-        sleep(0.5)
+        sleep(1)
     if not exit and f.isSet():
         # check for bomb in first room
         goStraight(10)
         sleep(2)
         turnDegs(90)
         goStraight(18)
-        sleep(2.5)
+        sleep(3)
         return
     if not exit and not f.isSet():
         # back into second room
         goStraight(-31)
-        sleep(3)
+        sleep(6)
     if not exit and f.isSet():
         # check for bomb in second room
         turnDegs(90)
         goStraight(18)
-        sleep(2.5)
+        sleep(3)
         return
     if not exit and not f.isSet():
         # go in front of third room
