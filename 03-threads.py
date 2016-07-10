@@ -19,6 +19,7 @@ exit = False
 
 bomb = 0
 
+'''
 def turnDegs(degrees):
     theta = int(abs(2.0 * ROBOT_WIDTH * degrees / WHEEL_DIAMETER))
     print theta
@@ -27,6 +28,20 @@ def turnDegs(degrees):
     else:
         psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
     sleep(2)
+'''
+
+def turnDegs(degrees, left=True):
+    theta = int(ROBOT_WIDTH * degrees / WHEEL_DIAMETER)
+    print theta
+    Thread(target = psm.BBM1.runDegs, args = (-1 * theta, SEARCH_SPEED, True, False)).start()
+    Thread(target = psm.BBM2.runDegs, args = (theta, SEARCH_SPEED, True, False)).start()
+    sleep(2)
+    '''
+    if left:
+        psm.BBM1.runDegs(-1 * theta, SEARCH_SPEED, True, False)
+    else:
+        psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
+    '''
 
 def follow(e, f, g):
     FOLLOW_SPEED = 8
@@ -74,7 +89,7 @@ def follow(e, f, g):
     while not exit: # and bomb (not bomb room) not found
         psm.BBM1.float()
         psm.BBM2.float()
-        if bomb = 1:
+        if bomb == 1:
             pass
         # etc
         sleep(0.1)
@@ -82,6 +97,7 @@ def follow(e, f, g):
     psm.BBM2.float()
 
 def search(e, f, g):
+    global bomb
     RED = 7         # or 8 or 9
     GREEN = 4
     PURPLE = 17     # also black o.O

@@ -6,6 +6,8 @@ from threading import Thread, Event
 from pid import PIDController
 import math
 '''
+from threading import Thread
+from time import sleep
 
 print "running program"
 
@@ -15,12 +17,23 @@ ROBOT_WIDTH = 6.5 # in
 
 psm = PiStorms()
 
-def turnDegs(degrees):
-    theta = int(abs(2.0 * ROBOT_WIDTH * degrees / WHEEL_DIAMETER))
+def turnDegs(degrees, left=True):
+    theta = int(ROBOT_WIDTH * degrees / WHEEL_DIAMETER)
     print theta
-    if degrees > 0:
-        psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
+    if left:
+        psm.BBM1.runDegs(-1 * theta, SEARCH_SPEED, True, False)
     else:
-        psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
+        psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
 
-turnDegs(180)
+def leftMotor():
+    turnDegs(180, True)
+    sleep(1)
+
+def rightMotor():
+    turnDegs(180, False)
+    sleep(1)
+
+left = Thread(target = leftMotor)
+left.start()
+right = Thread(target = rightMotor)
+right.start()
