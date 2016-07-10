@@ -49,7 +49,6 @@ def goStraight(dist):
     psm.BBM1.runDegs(theta, SEARCH_SPEED, True, False)
     psm.BBM2.runDegs(theta, SEARCH_SPEED, True, False)
     print theta
-    sleep(5)
 
 def avoid():
     psm.screen.termPrintln('hi')
@@ -79,40 +78,26 @@ def follow(e, f, g):
         sleep(0.3)
         psm.BBM1.brakeSync()
         turnDegs(-90)
-    while not exit and not f.isSet() and not g.isSet():
-        # go into first room
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.1)
-    while not exit and not psm.BAS1.isTouchedNXT():
-        # touch wall of first room
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.1)
     if not exit and not f.isSet():
-        # back up a bit out of first room
-        psm.BBM1.brakeSync()
-        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
-    if not exit:
-        # keep backing up
+        # go into first room
+        goStraight(6)
         sleep(2)
-    while not exit and not f.isSet() and not g.isSet():
+    if not exit and not f.isSet() and not g.isSet():
         # back into second room
-        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
-        sleep(0.1)
-    while not exit and not psm.BAS2.isTouchedNXT():
-        # touch wall of second room
-        psm.BBM1.setSpeedSync(-1 * SEARCH_SPEED)
-        sleep(0.1)
+        goStraight(-30)
+        sleep(10)
     psm.BBM1.brakeSync()
     if not exit and not f.isSet():
-        # turn to face third room
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
+        # go in front of third room
+        goStraight(6)
         sleep(2)
-        psm.BBM1.brakeSync()
+    if not exit and not f.isSet():
+        # turn to face third room
         turnDegs(90)
-    while not exit and not f.isSet() and not g.isSet():
+    if not exit and not f.isSet() and not g.isSet():
         # enter third room
-        psm.BBM1.setSpeedSync(SEARCH_SPEED)
-        sleep(0.1)
+        goStraight(6)
+        sleep(2)
     while not exit: # and bomb (not bomb room) not found
         psm.BBM1.float()
         psm.BBM2.float()
