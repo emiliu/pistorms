@@ -38,7 +38,8 @@ def follow(e, f, g):
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
-    sleep(0.1)
+    if not exit:
+        sleep(0.1)
     if not exit and not f.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
@@ -47,7 +48,8 @@ def follow(e, f, g):
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
-    sleep(0.1)
+    if not exit:
+        sleep(0.1)
     if not exit and not f.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.5)
@@ -59,7 +61,8 @@ def follow(e, f, g):
     while not exit and not f.isSet() and not g.isSet():
         psm.BBM1.setSpeedSync(SEARCH_SPEED)
         sleep(0.1)
-    sleep(0.1)
+    if not exit:
+        sleep(0.1)
     psm.BBM1.float()
     psm.BBM2.float()
 
@@ -99,10 +102,11 @@ def search(e, f, g):
 
 entered_house = Event()
 found_bomb = Event()
+gone_room = Event()
 
-f_thread = Thread(target=follow, args=(entered_house, found_bomb))
+f_thread = Thread(target=follow, args=(entered_house, found_bomb, gone_room))
 f_thread.start()
-s_thread = Thread(target=search, args=(entered_house, found_bomb))
+s_thread = Thread(target=search, args=(entered_house, found_bomb, gone_room))
 s_thread.start()
 
 while not exit:
