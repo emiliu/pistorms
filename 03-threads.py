@@ -17,6 +17,7 @@ psm.BBS2.activateCustomSensorI2C()
 angle_pid = PIDController(-25, 25, 590.0, 0.05, 0.0, 0.0)
 exit = False
 
+bomb = 0
 
 def turnDegs(degrees):
     theta = int(abs(2.0 * ROBOT_WIDTH * degrees / WHEEL_DIAMETER))
@@ -70,6 +71,13 @@ def follow(e, f, g):
         sleep(0.1)
     if not exit:
         sleep(0.1)
+    while not exit: # and bomb (not bomb room) not found
+        psm.BBM1.float()
+        psm.BBM2.float()
+        if bomb = 1:
+            pass
+        # etc
+        sleep(0.1)
     psm.BBM1.float()
     psm.BBM2.float()
 
@@ -99,10 +107,12 @@ def search(e, f, g):
                 g.set()
                 psm.led(1, 255, 0, 0)
                 psm.screen.termPrintln('f.set()')
-                print 'f.set()'
+                bomb += 1
+                print 'f.set(), bomb = ' + str(bomb)
             elif color >= PURPLE:
                 g.set()
-                print 'g.set()'
+                bomb += 1
+                print 'g.set(), bomb = ' + str(bomb)
                 sleep(0.1)
                 g.clear()
         sleep(0.1)
