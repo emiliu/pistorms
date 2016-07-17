@@ -17,6 +17,7 @@ hc = HiTechnicColorV2()
 psm.BBS2.activateCustomSensorI2C()
 angle_pid = PIDController(-25, 25, 590.0, 0.12, 0.0, 0.0)
 exit = False
+victims = 0
 
 '''
 def turnDegs(degrees):
@@ -53,7 +54,7 @@ def avoid():
     psm.screen.termPrintln('obstacle')
     goStraight(-2)
     sleep(1)
-    radius = 7
+    radius = 6
     turnDegs(-90)
     theta1 = int(radius * 360 / WHEEL_DIAMETER)
     theta2 = int((ROBOT_WIDTH + radius) * 360 / WHEEL_DIAMETER)
@@ -62,7 +63,22 @@ def avoid():
     sleep(5)
     turnDegs(-90)
 
-def follow(e, f):
+def follow(e, f, g):
+    while not exit and not e.isSet() and not g.isSet():
+        if psm.BAS1.isTouchedNXT():
+            psm.BBM1.brakeSync()
+            avoid()
+        value = psm.BBS1.lightSensorNXT(True)
+        offset = angle_pid.calculate(value)
+        #psm.screen.clearScreen()
+        #psm.screen.termPrintln(str(value) + ' ' + str(offset))
+        psm.BBM1.setSpeed(FOLLOW_SPEED + offset)
+        psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
+        sleep(0.1)
+    if not exit:
+        psm.BBM1.brakeSync()
+        sleep(0.1)
+        turnDegs(50)
     while not exit and not e.isSet():
         if psm.BAS1.isTouchedNXT():
             psm.BBM1.brakeSync()
@@ -73,13 +89,6 @@ def follow(e, f):
         #psm.screen.termPrintln(str(value) + ' ' + str(offset))
         psm.BBM1.setSpeed(FOLLOW_SPEED + offset)
         psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
-        '''
-        if angle_pid.slope < 0 and offset > 0:
-            offset = -1 * offset
-            psm.BBM1.setSpeed(FOLLOW_SPEED + offset)
-            psm.BBM2.setSpeed(FOLLOW_SPEED - offset)
-            sleep(1)
-        '''
         sleep(0.1)
     while not exit and not f.isSet() and not psm.BAS1.isTouchedNXT():
         # enter house
@@ -134,11 +143,12 @@ def follow(e, f):
     psm.BBM1.float()
     psm.BBM2.float()
 
-def search(e, f):
+def search(e, f, g):
     RED = 7         # or 8 or 9
     GREEN = 4
     PURPLE = 17     # also black o.O
     BLACK = 0
+    global victims
     while not exit:
         #psm.screen.clearScreen()
         #psm.screen.termPrintln(psm.BBS1.lightSensorNXT(True)) #str(hc.get_colornum()))
@@ -147,6 +157,9 @@ def search(e, f):
             if color > BLACK and color <= GREEN:
                 psm.led(1, 0, 255, 0)
                 psm.screen.termPrintln('found victim')
+                victims += 1
+                if victims == 3:
+                    g.set()
                 sleep(3)
                 psm.led(1, 0, 0, 0)
                 sleep(2)
@@ -170,10 +183,11 @@ if __name__ == "__main__":
 
     entered_house = Event()
     found_bomb = Event()
+    got_victim = Event()
 
-    f_thread = Thread(target=follow, args=(entered_house, found_bomb))
+    f_thread = Thread(target=follow, args=(entered_house, found_bomb, got_victim))
     f_thread.start()
-    s_thread = Thread(target=search, args=(entered_house, found_bomb))
+    s_thread = Thread(target=search, args=(entered_house, found_bomb, got_victim))
     s_thread.start()
 
     while not exit:
