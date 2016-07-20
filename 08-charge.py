@@ -18,27 +18,22 @@ if not psm.BAS2.presenceUSEV3():
 
 EDGE_LIGHT = 650
 RAMP_DIST = 45
-RUSH_DIST = 80
+RUSH_DIST = 40
 RAMP_UP = -115      # actually 120, but with some leeway
-RAMP_MID = -50      # approximately
+RAMP_MID = -60      # approximately
 RAMP_DOWN = 0       # also, negative is up
-SEARCH_SPEED = 50
+SPEED = 45
 WHEEL_DIAMETER = 2.25 # in
-ROBOT_WIDTH = 5.0 # in
+ROBOT_WIDTH = 4.0 # in
 
 def turnDegs(degrees, left=True):
     theta = int(ROBOT_WIDTH * degrees / WHEEL_DIAMETER)
     print theta
-    Thread(target = psm.BAM1.runDegs, args = (-1 * theta, SEARCH_SPEED, True, False)).start()
-    Thread(target = psm.BAM2.runDegs, args = (theta, SEARCH_SPEED, True, False)).start()
-    while psm.BAM1.isBusy():
-        pass
+    Thread(target = psm.BBM1.runDegs, args = (-1 * theta, SPEED, True, False)).start()
+    Thread(target = psm.BBM2.runDegs, args = (theta, SPEED, True, False)).start()
 
 def ramp(angle):
-    #psm.BAM1.runDegs(angle, 80, True, True)
-    #while psm.BAM1.isBusy():
-        #pass
-    return
+    psm.BAM1.runDegs(angle - psm.BAM1.pos(), 80, True, True)
 
 
 def go():
@@ -47,24 +42,28 @@ def go():
 
         # reached edge
         if psm.BAS1.lightSensorNXT(True) < EDGE_LIGHT:
-            psm.BBM1.setSpeedSync(-50)
-            sleep(0.5)
-            turnDegs(180)
-            #ramp(RAMP_MID)
+            psm.BBM1.brakeSync()
+            ramp(RAMP_MID)
+            psm.BBM1.setSpeedSync(-1 * SPEED)
+            sleep(1)
+            psm.BBM1.brakeSync()
+            turnDegs(90)
+            sleep(1)
 
         # saw someone
         elif psm.BAS2.distanceUSEV3in() < RUSH_DIST:
-            psm.BBM1.setSpeedSync(50)
-            #ramp(RAMP_DOWN)
+            ramp(RAMP_DOWN)
+            psm.BBM1.setSpeedSync(SPEED)
 
         # driving around
         else:
-            psm.BBM1.setSpeed(20)
-            psm.BBM2.setSpeed(50)
-            #ramp(RAMP_MID)
+            ramp(RAMP_MID)
+            psm.BBM1.setSpeedSync(SPEED)
 
         sleep(0.1)
 
+    psm.BAM1.float()
+    psm.BAM2.float()
     psm.BBM1.float()
     psm.BBM2.float()
 
@@ -72,7 +71,22 @@ def go():
 if __name__ == '__main__':
 
     psm.BAM1.resetPos()
-    psm.BAM1.hold()
+    ramp(RAMP_MID)
+    #while psm.BAM1.isBusy():
+        #pass
+    sleep(1)
+    #psm.BAM1.hold()
+
+    '''
+    ramp(RAMP_UP)
+    psm.screen.termPrintln(psm.BAM1.pos())
+    sleep(1)
+    psm.screen.termPrintln(psm.BAM1.pos())
+    ramp(RAMP_DOWN)
+    psm.screen.termPrintln(psm.BAM1.pos())
+    sleep(1)
+    psm.screen.termPrintln(psm.BAM1.pos())
+    '''
 
     Thread(target = go).start()
 
@@ -84,5 +98,9 @@ if __name__ == '__main__':
               psm.screen.termPrintln("")
               psm.screen.termPrintln("Exiting to menu")
               psm.led(1,0,0,0)    
+              psm.BAM1.float()
+              psm.BAM2.float()
+              psm.BBM1.float()
+              psm.BBM2.float()
               sleep(0.1)
               exit = True
