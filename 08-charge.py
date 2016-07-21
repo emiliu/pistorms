@@ -38,7 +38,7 @@ def ramp(angle):
 
 def go():
     while not exit:
-        psm.screen.termPrintln(str(psm.BAS1.lightSensorNXT(True)) + '   ' + str(psm.BAS2.distanceUSEV3in()) + '    ' + str(psm.BAM1.pos()))
+        #psm.screen.termPrintln(str(psm.BAS1.lightSensorNXT(True)) + '   ' + str(psm.BAS2.distanceUSEV3in()) + '    ' + str(psm.BAM1.pos()))
 
         # reached edge
         if psm.BAS1.lightSensorNXT(True) < EDGE_LIGHT:
@@ -47,7 +47,7 @@ def go():
             psm.BBM1.setSpeedSync(-1 * SPEED)
             sleep(1)
             psm.BBM1.brakeSync()
-            turnDegs(90)
+            turnDegs(100)
             sleep(1)
 
         # saw someone
@@ -71,22 +71,23 @@ def go():
 if __name__ == '__main__':
 
     psm.BAM1.resetPos()
-    ramp(RAMP_MID)
-    #while psm.BAM1.isBusy():
-        #pass
-    sleep(1)
-    #psm.BAM1.hold()
-
-    '''
     ramp(RAMP_UP)
-    psm.screen.termPrintln(psm.BAM1.pos())
-    sleep(1)
-    psm.screen.termPrintln(psm.BAM1.pos())
-    ramp(RAMP_DOWN)
-    psm.screen.termPrintln(psm.BAM1.pos())
-    sleep(1)
-    psm.screen.termPrintln(psm.BAM1.pos())
-    '''
+
+    while not psm.isKeyPressed():
+        psm.screen.termPrintln('waiting')
+
+    psm.screen.clearScreen()
+    psm.screen.termPrintln('starting!')
+
+    for i in xrange(5):
+        psm.led(1, 255, 0, 0)
+        sleep(0.8)
+        psm.led(1, 0, 0, 0)
+        sleep(0.2)
+
+    psm.screen.clearScreen()
+    ramp(RAMP_MID)
+    sleep(0.5)
 
     Thread(target = go).start()
 
